@@ -275,7 +275,7 @@ endif
 # Target rules
 all: build
 
-build: matrixMul
+build: class1 class2
 
 check.deps:
 ifeq ($(SAMPLE_ENABLED),0)
@@ -284,19 +284,22 @@ else
 	@echo "Sample is ready - all dependencies have been met"
 endif
 
-matrixMul.o:matrixMul.cu
-	$(EXEC) $(NVCC) $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
+class1.o:class.cu
+	$(EXEC) $(NVCC) -DNi=25088 -DNn=4096 -DBATCH_SIZE=16 $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
 
-matrixMul: matrixMul.o
+class2.o:class.cu
+	$(EXEC) $(NVCC) -DNi=4096 -DNn=1024 -DBATCH_SIZE=16 $(INCLUDES) $(ALL_CCFLAGS) $(GENCODE_FLAGS) -o $@ -c $<
+
+class1: class1.o
 	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES)
-	$(EXEC) mkdir -p ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
-	$(EXEC) cp $@ ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)
+
+class2: class2.o
+	$(EXEC) $(NVCC) $(ALL_LDFLAGS) $(GENCODE_FLAGS) -o $@ $+ $(LIBRARIES)
 
 run: build
-	$(EXEC) ./matrixMul
+	$(EXEC) ./class
 
 clean:
-	rm -f matrixMul matrixMul.o
-	rm -rf ../../bin/$(TARGET_ARCH)/$(TARGET_OS)/$(BUILD_TYPE)/matrixMul
+	rm -f class1 class1.o class2 class2.o
 
 clobber: clean

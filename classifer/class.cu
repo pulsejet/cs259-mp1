@@ -37,10 +37,6 @@
 #include <helper_functions.h>
 #include <helper_cuda.h>
 
-const int Ni = 25088;
-const int Nn = 4096;
-const int BATCH_SIZE = 16;
-
 template<class T>
 void printMatrix(const dim3 &dim, const std::vector<T> &vec) {
     for(int i=0; i < dim.y; i++)  {
@@ -175,60 +171,6 @@ MatrixMultiply(int block_size,
     std::vector<float> retval(dimsC.x * dimsC.y);
     checkCudaErrors(cudaMemcpy(retval.data(), d_C, retval.size() * sizeof(float), cudaMemcpyDeviceToHost));
 
-    /*
-    // Allocate CUDA events that we'll use for timing
-    cudaEvent_t start;
-    checkCudaErrors(cudaEventCreate(&start));
-
-    cudaEvent_t stop;
-    checkCudaErrors(cudaEventCreate(&stop));
-
-    // Record the start event
-    checkCudaErrors(cudaEventRecord(start, NULL));
-
-    // Execute the kernel
-    int nIter = 300;
-
-    for (int j = 0; j < nIter; j++) {
-        if (block_size == 16) {
-            MatrixMulCUDA<16> <<< grid, threads >>>(d_C, d_A, d_B,
-                                                    dimsA.x, dimsB.x);
-        } else {
-            MatrixMulCUDA<32> <<< grid, threads >>>(d_C, d_A, d_B,
-                                                    dimsA.x, dimsB.x);
-        }
-    }
-
-    // Record the stop event
-    checkCudaErrors(cudaEventRecord(stop, NULL));
-
-    // Wait for the stop event to complete
-    checkCudaErrors(cudaEventSynchronize(stop));*/
-
-    // Copy result from device to host
-    // checkCudaErrors(cudaMemcpy(h_C, d_C, mem_size_C, cudaMemcpyDeviceToHost));
-
-    /*
-    float msecTotal = 0.0f;
-    checkCudaErrors(cudaEventElapsedTime(&msecTotal, start, stop));
-
-    // Compute and print the performance
-    float msecPerMatrixMul = msecTotal / nIter;
-    double flopsPerMatrixMul = 2.0 * static_cast<double>(dimsA.x) *
-                               static_cast<double>(dimsA.y) *
-                               static_cast<double>(dimsB.x);
-    double gigaFlops = (flopsPerMatrixMul * 1.0e-9f) /
-                       (msecPerMatrixMul / 1000.0f);
-    printf(
-        "Performance= %.2f GFlop/s, Time= %.3f msec, Size= %.0f Ops," \
-        " WorkgroupSize= %u threads/block\n",
-        gigaFlops,
-        msecPerMatrixMul,
-        flopsPerMatrixMul,
-        threads.x * threads.y);
-
-    */
-
     if (verify) {
         for (size_t i = 0; i < dimsA.y; i++) {
             for (size_t j = 0; j < dimsB.x; j++) {
@@ -273,12 +215,8 @@ int main(int argc, char **argv) {
     generate(h_X.begin(), h_X.end(), []() { return (float) (rand() % 100); });
     auto result = MatrixMultiply(block_size, dimsX, dimsW, h_X, h_W, false);
 
-    printf("MatrixA(%d,%d), MatrixB(%d,%d), MatrixC(%d,%d)\n",
+    printf("MatrixX(%d,%d), MatrixW%d,%d), MatrixY(%d,%d)\n",
            dimsX.x, dimsX.y, dimsW.x, dimsW.y, result.first.x, result.first.y);
-
-    // printMatrix<float>(dimsX, h_X);
-    // printMatrix<float>(dimsW, h_W);
-    // printMatrix<float>(result.first, result.second);
 
     return 0;
 }
