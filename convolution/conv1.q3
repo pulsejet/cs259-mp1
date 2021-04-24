@@ -1,0 +1,8 @@
+==193718== NVPROF is profiling process 193718, command: ./conv1
+==193718== Profiling application: ./conv1
+==193718== Profiling result:
+==193718== Metric result:
+Invocations                               Metric Name                        Metric Description         Min         Max         Avg
+Device "TITAN V (0)"
+    Kernel: convolution3d(float*, float*, float*)
+          1                      dram_read_throughput             Device Memory Read Throughput  6.9480GB/s  6.9480GB/s  6.9480GB/s

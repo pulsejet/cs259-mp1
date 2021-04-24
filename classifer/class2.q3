@@ -1,0 +1,8 @@
+==194829== NVPROF is profiling process 194829, command: ./class2
+==194829== Profiling application: ./class2
+==194829== Profiling result:
+==194829== Metric result:
+Invocations                               Metric Name                        Metric Description         Min         Max         Avg
+Device "TITAN V (0)"
+    Kernel: void MatrixMulCUDA<int=16>(float*, float*, float*, int, int)
+          1                      dram_read_throughput             Device Memory Read Throughput  86.125GB/s  86.125GB/s  86.125GB/s
